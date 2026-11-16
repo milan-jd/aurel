@@ -625,3 +625,7 @@ a,button,input,select,textarea,label{touch-action:manipulation}
 .chips button.on,.samples button.on{box-shadow:0 10px 22px -12px rgba(26,23,20,.55)}
 .qa button i{transition:transform .55s var(--spring),background .35s,color .35s}
 .bagbtn b{transition:transform .5s var(--spring),background .4s}
+/* engraving follows the angle of each bottle's face */
+.sp-eng{transform:translate(-50%,-50%) skewY(var(--sk,0deg));font-size:clamp(9px,1.35vw,18px)}
+.sp-eng.pulse{animation:engp2 .6s var(--silk)}
+@keyframes engp2{0%{filter:brightness(1.8);transform:translate(-50%,-50%) skewY(var(--sk,0deg)) scale(1.08)}100%{filter:none;transform:translate(-50%,-50%) skewY(var(--sk,0deg))}}
