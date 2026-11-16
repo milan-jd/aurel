@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#F3EEE6">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231A1714'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='18' fill='%23D9B77E' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="Cormorant-300.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body data-page="home">
 <div class="grain"></div>
@@ -25,6 +25,7 @@
       <div class="meta rv" style="--d:.8s"><div><b>Free engraving</b>On every bottle</div><div><b>Free shipping</b>Over $150</div><div><b>30-day returns</b>Even opened</div></div>
     </div>
   </div>
+  <div id="heroHit" aria-hidden="true"></div>
   <a class="drag" href="#story" aria-label="Scroll to our story"><i>↓</i>SCROLL</a>
 </section>
 <div class="marq" aria-hidden="true"><div>
@@ -53,16 +54,17 @@
   <div class="grid" id="homeGrid"></div>
 </div></section>
 <section class="hz" id="ritual">
-  <div class="track" id="htrack"><div class="stick">
-    <div class="wrap head"><div><span class="lab">The ritual</span><h2 class="sp" style="margin-top:18px;font-size:clamp(44px,5.4vw,84px)">Four moments, <em>one scent.</em></h2></div><span class="lab" style="display:none" id="hzhint"></span></div>
-    <div class="row" id="hrow">
+  <div class="hzin">
+    <div class="wrap head"><div><span class="lab">The ritual</span><h2 class="sp" style="margin-top:18px;font-size:clamp(44px,5.4vw,84px)">Four moments, <em>one scent.</em></h2></div><div class="harr"><button id="hprev" aria-label="Previous moments">←</button><button id="hnext" aria-label="Next moments">→</button></div></div>
+    <div class="row" id="hrow" tabindex="0" aria-label="The ritual: four moments, scroll sideways">
       <a class="tile" href="product.html?p=no1"><div class="art"><img src="morning.webp" alt="Morning: the bottle on a travertine vanity in sunrise light" loading="lazy" width="880" height="1100"></div><div class="cap"><small>06:40 · NO. 1 AUBE DORÉE</small><h4>First light, pulse points</h4></div></a>
       <a class="tile" href="product.html?p=no5"><div class="art"><img src="midday.webp" alt="Midday: a rose-pink bottle among Damask roses" loading="lazy" width="880" height="1100"></div><div class="cap"><small>13:00 · NO. 5 ROSE MIDI</small><h4>A rose in full bloom</h4></div></a>
       <a class="tile" href="product.html?p=no3"><div class="art"><img src="dusk.webp" alt="Dusk: the bottle among vetiver grasses and olive branches" loading="lazy" width="880" height="1100"></div><div class="cap"><small>18:30 · NO. 3 VÉTIVER SOLEIL</small><h4>Vetiver on warm skin</h4></div></a>
       <a class="tile" href="product.html?p=no9"><div class="art"><img src="night.webp" alt="Night: the bottle by candlelight on dark walnut" loading="lazy" width="880" height="1100"></div><div class="cap"><small>23:00 · NO. 9 NUIT D'AMBRE</small><h4>Amber afterglow</h4></div></a>
-      <div class="tile" style="background:var(--ink);justify-content:center;align-items:flex-start"><div class="cap"><small style="color:var(--gold2)">YOUR TURN</small><h4 style="font-size:46px">Make No. 7<br><em>your own.</em></h4><a class="btn" href="product.html?p=no7" style="margin-top:28px;background:var(--bg);color:var(--ink);height:50px"><span>Engrave in 3D →</span></a></div></div>
+      <div class="tile" style="background:var(--ink);justify-content:center;align-items:flex-start"><div class="cap"><small style="color:var(--gold2)">YOUR TURN</small><h4 style="font-size:46px">Make No. 7<br><em>your own.</em></h4><a class="btn" href="product.html?p=no7" style="margin-top:28px;background:var(--bg);color:var(--ink);height:50px"><span>Engrave yours →</span></a></div></div>
     </div>
-  </div></div>
+    <div class="wrap hbar"><i id="hbar"></i></div>
+  </div>
 </section>
 <section class="rev" id="reviews">
   <div class="wrap head"><div><span class="lab">Worn and loved</span><h2 class="sp" style="margin-top:18px;max-width:12ch">People don't stop <em>asking.</em></h2></div>
