@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AUREL — No. 7 Ambre Lumière</title>
+<meta name="description" content="AUREL No. 7, Ambre Lumière. A concept build: a D2C fragrance store with a live 3D bottle you can spin, colour, size and engrave.">
+<meta name="theme-color" content="#F3EEE6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231A1714'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='18' fill='%23D9B77E' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="Cormorant-300.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"Corm";font-weight:300;font-display:swap;src:url(Cormorant-300.woff2) format("woff2")}
+@font-face{font-family:"Corm";font-weight:500;font-display:swap;src:url(Cormorant-500.woff2) format("woff2")}
+@font-face{font-family:"Corm";font-weight:400;font-style:italic;font-display:swap;src:url(Cormorant-400i.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:400;font-display:swap;src:url(Inter-Regular.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:500;font-display:swap;src:url(Inter-Medium.woff2) format("woff2")}
+:root{--bg:#F3EEE6;--bg2:#EAE3D8;--ink:#1A1714;--mut:#6F665C;--line:rgba(26,23,20,.12);--gold:#B8925A;--gold2:#D9B77E;--card:rgba(255,252,247,.6);--ease:cubic-bezier(.2,.8,.2,1)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--ink);color:var(--bg)}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1.5px solid var(--gold);outline-offset:4px;border-radius:4px}
+.serif{font-family:Corm,Georgia,serif}
+h1,h2,h3{font-family:Corm,Georgia,serif;font-weight:300;letter-spacing:-.02em;line-height:.98}
+em,.it{font-family:Corm,Georgia,serif;font-style:italic;font-weight:400}
+.wrap{width:min(1320px,100% - 56px);margin:0 auto}
+.lab{font:500 11.5px Inter;letter-spacing:.28em;text-transform:uppercase;color:var(--mut)}
+canvas#gl{position:fixed;inset:0;width:100%;height:100%;z-index:1;display:block;pointer-events:none;transition:opacity .8s}
+main{position:relative;z-index:2}
+.grain{position:fixed;inset:-50%;z-index:70;pointer-events:none;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* loader */
+#loader{position:fixed;inset:0;z-index:100;background:var(--ink);color:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:clip-path 1.1s var(--ease);clip-path:inset(0 0 0 0)}
+#loader.done{clip-path:inset(0 0 100% 0)}
+#loader .mark{font:300 64px Corm;letter-spacing:.42em;padding-left:.42em}
+#loader .bar{width:180px;height:1px;background:rgba(243,238,230,.18);overflow:hidden}
+#loader .bar i{display:block;height:100%;width:0;background:var(--gold2);transition:width .25s}
+#loader small{font:500 11px Inter;letter-spacing:.3em;color:rgba(243,238,230,.55)}
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:60;transition:background .4s,border-color .4s,transform .5s var(--ease);border-bottom:1px solid transparent}
+nav.sc{background:rgba(243,238,230,.78);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border-color:var(--line)}
+nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:76px}
+nav .links{display:flex;gap:30px}
+nav .links a{font-size:13.5px;color:var(--mut);transition:color .2s;position:relative}
+nav .links a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+nav .links a:hover{color:var(--ink)}nav .links a:hover::after{transform:scaleX(1);transform-origin:left}
+.logo{font:300 30px Corm;letter-spacing:.38em;padding-left:.38em}
+nav .r{display:flex;justify-content:flex-end;gap:22px;align-items:center}
+.bagbtn{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.bagbtn b{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--ink);color:var(--bg);font-size:11px;font-weight:500;transition:transform .4s var(--ease)}
+.bagbtn b.pop{transform:scale(1.35)}
+@media(max-width:860px){nav .links{display:none}nav .wrap{grid-template-columns:1fr auto}.logo{font-size:24px}}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;height:56px;padding:0 32px;border-radius:999px;font-size:14px;font-weight:500;letter-spacing:.04em;position:relative;overflow:hidden;transition:transform .3s var(--ease),color .4s}
+.btn.dark{background:var(--ink);color:var(--bg)}
+.btn.dark::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateY(101%);transition:transform .55s var(--ease);border-radius:inherit}
+.btn.dark:hover::before{transform:none}
+.btn span{position:relative}
+.btn.line{border:1px solid var(--ink)}
+.btn.line:hover{background:var(--ink);color:var(--bg)}
+/* hero */
+.hero{min-height:100svh;display:flex;align-items:center;padding:110px 0 70px;position:relative}
+.hero .copy{max-width:640px;position:relative;z-index:3}
+.hero h1{font-size:clamp(64px,10.5vw,168px);margin:26px 0 28px}
+.hero h1 em{display:block;color:var(--gold)}
+.hero p{font-size:clamp(16px,1.3vw,19px);color:var(--mut);max-width:42ch}
+.hero .ctas{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap;align-items:center}
+.hero .price{font:300 34px Corm;margin-right:12px}
+.hero .meta{display:flex;gap:36px;margin-top:60px;flex-wrap:wrap}
+.hero .meta div{font-size:13px;color:var(--mut)}
+.hero .meta b{display:block;font:500 15px Inter;color:var(--ink);margin-bottom:2px}
+.drag{position:absolute;right:max(28px,calc((100vw - 1320px)/2));bottom:46px;display:flex;align-items:center;gap:14px;font:500 11px Inter;letter-spacing:.28em;color:var(--mut);z-index:3}
+.drag i{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px;animation:sw 2.6s var(--ease) infinite}
+@keyframes sw{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+#hit{position:absolute;inset:0;z-index:2;cursor:grab;touch-action:pan-y}
+#hit:active{cursor:grabbing}
+/* reveal */
+.sp .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em}
+.sp .w>span{display:inline-block;transform:translateY(105%);transition:transform 1.2s var(--ease);transition-delay:calc(var(--i)*60ms)}
+.sp.in .w>span{transform:none}
+.rv{opacity:0;transform:translateY(30px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+/* marquee */
+.marq{border-block:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:26px 0;background:var(--bg)}
+.marq div{display:inline-flex;gap:60px;animation:mq 46s linear infinite;padding-right:60px;align-items:center}
+.marq span{font:300 34px Corm;letter-spacing:.02em}
+.marq i{font-style:normal;color:var(--gold);font-size:18px}
+@keyframes mq{to{transform:translateX(-50%)}}
+section{position:relative}
+.sec{padding:170px 0}
+h2{font-size:clamp(46px,6.6vw,104px)}
+.lead{font-size:clamp(17px,1.35vw,20px);color:var(--mut);max-width:46ch;margin-top:26px}
+/* notes story */
+.notes .track{height:360vh}
+.notes .stick{position:sticky;top:0;height:100svh;display:flex;align-items:center;overflow:hidden}
+.notes .g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.nlist{position:relative}
+.note{position:absolute;left:0;top:50%;transform:translateY(-50%);opacity:0;transition:opacity .8s var(--ease),transform .9s var(--ease);pointer-events:none}
+.note.on{opacity:1;transform:translateY(-50%) translateX(0);pointer-events:auto}
+.note.prev{transform:translateY(-60%)}
+.note h3{font-size:clamp(54px,7vw,112px);margin:14px 0 22px}
+.note p{color:var(--mut);max-width:38ch;font-size:17px}
+.note ul{list-style:none;display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
+.note li{padding:9px 16px;border:1px solid var(--line);border-radius:999px;font-size:13px;background:var(--card);backdrop-filter:blur(8px)}
+.nnav{position:absolute;left:0;bottom:-36vh;display:flex;gap:26px;align-items:center}
+.nnav span{font:500 11px Inter;letter-spacing:.24em;color:var(--mut);transition:color .4s}
+.nnav span.on{color:var(--ink)}
+.nnav .pb{width:140px;height:1px;background:var(--line);position:relative}
+.nnav .pb i{position:absolute;left:0;top:0;bottom:0;background:var(--ink);width:calc(var(--p,0)*100%)}
+.nl-holder{height:420px;position:relative}
+/* craft */
+.craft .g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:60px;align-items:end}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:90px;border-top:1px solid var(--line)}
+.stat{padding:34px 28px 0 0}
+.stat+.stat{padding-left:28px;border-left:1px solid var(--line)}
+.stat b{display:block;font:300 clamp(54px,6vw,92px)/1 Corm;letter-spacing:-.03em}
+.stat span{display:block;margin-top:12px;color:var(--mut);font-size:14px;max-width:24ch}
+/* gallery (horizontal) */
+.hz .track{height:300vh}
+.hz .stick{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.hz .row{display:flex;gap:28px;padding-left:max(28px,calc((100vw - 1320px)/2));will-change:transform}
+.tile{flex:0 0 auto;width:min(440px,78vw);aspect-ratio:4/5;border-radius:6px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:30px;color:#FBF7F0}
+.tile .art{position:absolute;inset:0;transition:transform 1.4s var(--ease)}
+.tile:hover .art{transform:scale(1.06)}
+.tile .cap{position:relative}
+.tile small{font:500 11px Inter;letter-spacing:.26em;opacity:.8}
+.tile h4{font:300 40px/1 Corm;margin-top:10px}
+.hz .head{display:flex;justify-content:space-between;align-items:end;margin-bottom:46px}
+/* configurator */
+.cfg .g>*,.set .g>*,.craft .g>*{min-width:0}
+.eng input,.nform input{min-width:0;width:100%}
+.cfg .g{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:40px;align-items:center;min-height:100svh}
+.stage{position:relative;height:min(78vh,760px)}
+.stage .ring{position:absolute;left:50%;top:50%;width:min(560px,90%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--line)}
+.stage .ring::after{content:"";position:absolute;inset:9%;border-radius:50%;border:1px dashed rgba(26,23,20,.1);animation:rot 60s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.stage .tip{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);font:500 11px Inter;letter-spacing:.26em;color:var(--mut)}
+#hit2{position:absolute;inset:0;cursor:grab;touch-action:pan-y}
+.panel{background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:28px;padding:44px}
+.panel h2{font-size:clamp(44px,4.6vw,72px)}
+.opt{margin-top:34px}
+.opt .lab{display:flex;justify-content:space-between;margin-bottom:14px}
+.opt .lab em{font-size:16px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.sw{display:flex;gap:12px}
+.sw button{width:48px;height:48px;border-radius:50%;position:relative;transition:transform .3s var(--ease)}
+.sw button::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--ink);opacity:0;transform:scale(.85);transition:all .35s var(--ease)}
+.sw button.on::after{opacity:1;transform:none}
+.sw button:hover{transform:translateY(-2px)}
+.sizes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sizes button{border:1px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;transition:all .3s var(--ease);background:rgba(255,255,255,.35)}
+.sizes button b{display:block;font:500 15px Inter}
+.sizes button span{font-size:12.5px;color:var(--mut)}
+.sizes button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sizes button.on span{color:rgba(243,238,230,.7)}
+.eng{display:flex;align-items:center;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.35);padding:0 18px;height:54px;transition:border-color .3s}
+.eng:focus-within{border-color:var(--ink)}
+.eng input{flex:1;height:100%;outline:none;font:400 22px Corm;letter-spacing:.12em;text-transform:uppercase}
+.eng small{color:var(--mut);font-size:12px}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:38px;padding-top:30px;border-top:1px solid var(--line)}
+.total{font:300 46px/1 Corm}
+.total small{display:block;font:400 12.5px Inter;color:var(--mut);margin-top:6px}
+.buy .btn{flex:1;max-width:280px}
+.perks{display:flex;gap:22px;margin-top:22px;flex-wrap:wrap}
+.perks span{font-size:12.5px;color:var(--mut);display:flex;gap:8px;align-items:center}
+.perks span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold)}
+/* reviews */
+.rev{padding:150px 0;background:var(--ink);color:var(--bg);overflow:hidden}
+.rev .head{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap}
+.rev .score{text-align:right}
+.rev .score b{font:300 120px/1 Corm}
+.rev .score span{display:block;color:rgba(243,238,230,.6);font-size:13px;letter-spacing:.06em}
+.stars{color:var(--gold2);letter-spacing:.2em;font-size:15px}
+.rrow{display:flex;gap:22px;margin-top:80px;width:max-content;animation:mq 60s linear infinite}
+.rrow:hover{animation-play-state:paused}
+.rc{width:400px;padding:34px;border:1px solid rgba(243,238,230,.14);border-radius:22px;background:rgba(243,238,230,.03)}
+.rc p{font:300 26px/1.3 Corm;margin:18px 0 26px}
+.rc small{color:rgba(243,238,230,.55);font-size:13px}
+.rev .lab{color:rgba(243,238,230,.55)}
+/* set */
+.set .g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:70px;align-items:center}
+.vials{display:flex;gap:18px;justify-content:center;align-items:flex-end;height:420px;padding:40px;border-radius:28px;background:linear-gradient(160deg,#EFE7DB,#E3D8C8);position:relative;overflow:hidden}
+.vial{width:54px;border-radius:10px 10px 14px 14px;position:relative;background:linear-gradient(90deg,rgba(255,255,255,.65),rgba(255,255,255,.15) 40%,rgba(255,255,255,.5));box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 30px 40px -20px rgba(60,40,20,.35);transition:transform .6s var(--ease)}
+.vial::before{content:"";position:absolute;left:5px;right:5px;bottom:5px;top:28%;border-radius:6px 6px 10px 10px;background:var(--c);opacity:.85}
+.vial::after{content:"";position:absolute;left:50%;top:-34px;width:30px;height:36px;transform:translateX(-50%);border-radius:6px 6px 2px 2px;background:linear-gradient(90deg,#8C6A3A,#E2C690 45%,#9E7A45)}
+.vials:hover .vial{transform:translateY(-10px)}
+.vials:hover .vial:nth-child(2n){transform:translateY(-18px)}
+/* faq */
+.faq{max-width:880px;margin:70px auto 0}
+.qa{border-top:1px solid var(--line)}
+.qa:last-child{border-bottom:1px solid var(--line)}
+.qa button{width:100%;display:flex;justify-content:space-between;align-items:center;padding:28px 0;text-align:left;font:300 28px Corm}
+.qa button i{font-style:normal;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;transition:transform .5s var(--ease);font:300 20px Inter;flex:0 0 auto}
+.qa.open button i{transform:rotate(45deg)}
+.qa .a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
+.qa.open .a{grid-template-rows:1fr}
+.qa .a>div{overflow:hidden}
+.qa .a p{padding:0 60px 30px 0;color:var(--mut)}
+/* news + footer */
+.news{text-align:center;padding:170px 0 120px}
+.news h2{max-width:13ch;margin:0 auto}
+.nform{display:flex;max-width:520px;margin:44px auto 0;border-bottom:1px solid var(--ink)}
+.nform input{flex:1;height:58px;outline:none;font-size:16px}
+.nform button{font:500 12px Inter;letter-spacing:.24em}
+.msg{min-height:24px;margin-top:16px;font-size:13.5px;color:var(--gold)}
+footer{border-top:1px solid var(--line);padding:60px 0 50px;background:var(--bg2);position:relative;z-index:2}
+footer .g{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+footer h5{font:500 11px Inter;letter-spacing:.24em;color:var(--mut);margin-bottom:18px}
+footer a{display:block;font-size:14px;margin-bottom:10px;color:var(--ink);opacity:.8}
+footer a:hover{opacity:1}
+footer .bot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:60px;padding-top:26px;border-top:1px solid var(--line);font-size:12.5px;color:var(--mut)}
+/* bag drawer */
+#scrim{position:fixed;inset:0;background:rgba(26,23,20,.35);z-index:80;opacity:0;pointer-events:none;transition:opacity .5s}
+#scrim.on{opacity:1;pointer-events:auto}
+#bag{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);z-index:90;background:var(--bg);transform:translateX(102%);transition:transform .7s var(--ease);display:flex;flex-direction:column;box-shadow:-40px 0 80px rgba(26,23,20,.12)}
+#bag.on{transform:none}
+#bag header{display:flex;justify-content:space-between;align-items:center;padding:26px 30px;border-bottom:1px solid var(--line)}
+#bag header h3{font-size:34px}
+.ship{padding:20px 30px;border-bottom:1px solid var(--line);font-size:13px;color:var(--mut)}
+.ship .pb{height:3px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+.ship .pb i{display:block;height:100%;background:var(--gold);width:0;transition:width .8s var(--ease)}
+#items{flex:1;overflow:auto;padding:10px 30px}
+.it{display:grid;grid-template-columns:76px 1fr auto;gap:18px;padding:22px 0;border-bottom:1px solid var(--line);animation:in .6s var(--ease) both}
+@keyframes in{from{opacity:0;transform:translateX(20px)}}
+.it .th{width:76px;height:96px;border-radius:10px;background:linear-gradient(160deg,#EFE7DB,#E1D5C3);display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px}
+.it .th i{width:34px;height:48px;border-radius:6px;background:var(--c);box-shadow:inset 0 0 0 3px rgba(255,255,255,.55);position:relative}
+.it .th i::after{content:"";position:absolute;left:50%;top:-14px;width:18px;height:14px;transform:translateX(-50%);border-radius:3px;background:linear-gradient(90deg,#8C6A3A,#E2C690,#9E7A45)}
+.it h4{font:300 24px/1.1 Corm}
+.it small{display:block;color:var(--mut);font-size:12.5px;margin-top:4px}
+.qty{display:inline-flex;align-items:center;gap:14px;margin-top:12px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+.qty button{width:20px;height:20px;font-size:15px}
+.it .pr{text-align:right;font:300 22px Corm}
+.it .rm{display:block;font:400 12px Inter;color:var(--mut);margin-top:10px;text-decoration:underline}
+.empty{padding:60px 0;text-align:center;color:var(--mut)}
+#bag footer{position:static;background:none;padding:26px 30px;border-top:1px solid var(--line)}
+.sub{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+.sub b{font:300 34px Corm}
+#bag .btn{width:100%}
+.note-s{text-align:center;font-size:12px;color:var(--mut);margin-top:12px}
+/* mobile sticky */
+#sticky{position:fixed;left:12px;right:12px;bottom:12px;z-index:55;display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 20px;border-radius:999px;background:rgba(26,23,20,.92);color:var(--bg);backdrop-filter:blur(12px);transform:translateY(140%);transition:transform .6s var(--ease)}
+#sticky.on{transform:none}
+#sticky b{font:300 24px Corm}
+#sticky small{display:block;font-size:11px;opacity:.65}
+#sticky .btn{height:46px;padding:0 22px;background:var(--bg);color:var(--ink)}
+/* toast */
+#toast{position:fixed;left:50%;bottom:28px;z-index:95;transform:translate(-50%,calc(100% + 80px));visibility:hidden;background:var(--ink);color:var(--bg);padding:14px 24px;border-radius:999px;font-size:13.5px;transition:transform .6s var(--ease);white-space:nowrap}
+#toast.on{transform:translate(-50%,0);visibility:visible}
+/* responsive */
+@media(max-width:900px){
+ .wrap{width:min(1320px,100% - 36px)}
+ .sec{padding:110px 0}
+ .hero{align-items:flex-start;padding-top:calc(76px + 46svh);min-height:auto;padding-bottom:70px}
+ .drag{display:none}
+ .hero .meta{gap:24px;margin-top:40px}
+ .drag{left:18px;right:auto;bottom:28px}
+ .notes .track{height:300vh}
+ .notes .g{grid-template-columns:1fr}
+ .nl-holder{height:48vh}
+ .note{top:0;transform:none}.note.on{transform:none}.note.prev{transform:translateY(-12px)}
+ .note h3{font-size:58px}
+ .nnav{bottom:auto;top:calc(100% + 10px)}
+ .craft .g,.set .g{grid-template-columns:1fr;gap:30px}
+ .stats{grid-template-columns:1fr;margin-top:50px}
+ .stat,.stat+.stat{padding:26px 0;border-left:0;border-bottom:1px solid var(--line)}
+ .cfg .g{grid-template-columns:1fr;gap:0;min-height:auto}
+ .stage{height:62vh}
+ .panel{padding:28px 22px;border-radius:22px}
+ .buy{flex-direction:column;align-items:stretch}
+ .buy .btn{max-width:none;flex:none;width:100%}
+ .rc{width:300px;padding:26px}.rc p{font-size:22px}
+ .rev .score{text-align:left}
+ .vials{height:320px;gap:12px}.vial{width:40px}
+ .qa button{font-size:23px}
+ footer .g{grid-template-columns:1fr 1fr}
+ #sticky{display:flex}
+ .sizes button{padding:12px 4px}
+ .panel h2{font-size:42px}
+ .eng input{font-size:19px}
+ .hz .tile{width:76vw}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important}.sp .w>span{transform:none}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="loader" aria-hidden="true"><div class="mark">AUREL</div><div class="bar"><i id="lb"></i></div><small>MAISON DE PARFUM</small></div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="grain"></div>
+
+<nav id="nav" aria-label="Primary"><div class="wrap">
+  <div class="links"><a href="#notes">The Scent</a><a href="#craft">Craft</a><a href="#make">Make it yours</a><a href="#set">Discovery</a></div>
+  <a class="logo" href="#top" aria-label="AUREL home">AUREL</a>
+  <div class="r"><button class="bagbtn" id="bagOpen" aria-label="Open bag">Bag <b id="bagN">0</b></button></div>
+</div></nav>
+
+<main id="top">
+<section class="hero" id="hero">
+  <div id="hit" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="copy">
+      <span class="lab rv">Eau de Parfum · No. 7</span>
+      <h1 class="sp">Ambre <em>Lumière</em></h1>
+      <p class="rv" style="--d:.5s">Warm amber, Damask rose and a trace of smoked vanilla. A scent that lingers on skin like late golden light.</p>
+      <div class="ctas rv" style="--d:.65s"><span class="price">from $95</span><a class="btn dark" href="#make"><span>Make it yours</span></a><a class="btn line" href="#notes"><span>Discover the notes</span></a></div>
+      <div class="meta rv" style="--d:.8s"><div><b>12 hrs</b>Lasting wear</div><div><b>Free engraving</b>On every bottle</div><div><b>Refillable</b>Glass &amp; brass</div></div>
+    </div>
+  </div>
+  <div class="drag" aria-hidden="true"><i>↔</i>DRAG TO TURN</div>
+</section>
+
+<div class="marq" aria-hidden="true"><div>
+  <span>Grasse rose</span><i>✦</i><span>Laotian amber</span><i>✦</i><span>Madagascar vanilla</span><i>✦</i><span>Calabrian bergamot</span><i>✦</i><span>Haitian vetiver</span><i>✦</i>
+  <span>Grasse rose</span><i>✦</i><span>Laotian amber</span><i>✦</i><span>Madagascar vanilla</span><i>✦</i><span>Calabrian bergamot</span><i>✦</i><span>Haitian vetiver</span><i>✦</i>
+</div></div>
+
+<section class="notes" id="notes">
+  <div class="track" id="ntrack"><div class="stick"><div class="wrap g">
+    <div>
+      <span class="lab">The composition</span>
+      <div class="nl-holder" id="nlist">
+        <div class="note on"><span class="lab">01 · Top</span><h3>Bright <em>beginnings</em></h3><p>Calabrian bergamot and pink pepper open the scent with a clean, sparkling lift.</p><ul><li>Bergamot</li><li>Pink pepper</li><li>Mandarin</li></ul></div>
+        <div class="note"><span class="lab">02 · Heart</span><h3>A rose, <em>unhurried</em></h3><p>Damask rose and jasmine sambac unfold slowly, soft and full like petals in sun.</p><ul><li>Damask rose</li><li>Jasmine</li><li>Orris</li></ul></div>
+        <div class="note"><span class="lab">03 · Base</span><h3>Amber <em>afterglow</em></h3><p>Resinous amber, smoked vanilla and vetiver settle in for a warm, lasting trail.</p><ul><li>Amber</li><li>Vanilla</li><li>Vetiver</li></ul></div>
+        <div class="nnav" id="nnav"><span class="on">TOP</span><div class="pb"><i></i></div><span>HEART</span><span>BASE</span></div>
+      </div>
+    </div>
+    <div></div>
+  </div></div></div>
+</section>
+
+<section class="sec craft" id="craft"><div class="wrap">
+  <div class="g">
+    <div><span class="lab rv">The craft</span><h2 class="sp" style="margin-top:22px">Made slowly, <em>by hand.</em></h2></div>
+    <p class="lead rv" style="--d:.15s">Each batch is macerated for eight weeks in Grasse, then poured into heavy glass and capped in solid brass. Fewer bottles. Better ones.</p>
+  </div>
+  <div class="stats">
+    <div class="stat rv"><b data-n="8">0</b><span>Weeks of maceration before bottling</span></div>
+    <div class="stat rv" style="--d:.1s"><b data-n="22" data-s="%">0</b><span>Perfume concentration, an extrait-level dose</span></div>
+    <div class="stat rv" style="--d:.2s"><b data-n="100" data-s="%">0</b><span>Refillable glass and recyclable brass</span></div>
+  </div>
+</div></section>
+
+<section class="hz" id="ritual">
+  <div class="track" id="htrack"><div class="stick">
+    <div class="wrap head"><div><span class="lab">The ritual</span><h2 class="sp" style="margin-top:18px;font-size:clamp(44px,5.4vw,84px)">Four moments, <em>one scent.</em></h2></div><span class="lab" style="display:none" id="hzhint"></span></div>
+    <div class="row" id="hrow">
+      <div class="tile"><div class="art" style="background:radial-gradient(120% 80% at 70% 20%,#F6D9A6,transparent 60%),radial-gradient(100% 90% at 20% 90%,#B9733C,transparent 60%),linear-gradient(160deg,#E7B57A,#8F4E26)"></div><div class="cap"><small>06:40 · MORNING</small><h4>First light, pulse points</h4></div></div>
+      <div class="tile"><div class="art" style="background:radial-gradient(90% 70% at 30% 30%,#F3C9C3,transparent 60%),radial-gradient(90% 90% at 80% 80%,#B4636A,transparent 60%),linear-gradient(160deg,#E8A9A4,#7E3B44)"></div><div class="cap"><small>13:00 · MIDDAY</small><h4>A rose in full bloom</h4></div></div>
+      <div class="tile"><div class="art" style="background:radial-gradient(100% 70% at 60% 25%,#D8C7A6,transparent 60%),radial-gradient(90% 90% at 20% 85%,#5E5A3C,transparent 60%),linear-gradient(160deg,#A79C78,#3C3A26)"></div><div class="cap"><small>18:30 · DUSK</small><h4>Vetiver on warm skin</h4></div></div>
+      <div class="tile"><div class="art" style="background:radial-gradient(90% 60% at 50% 20%,#7A5A3E,transparent 60%),radial-gradient(90% 90% at 80% 90%,#2A1A12,transparent 60%),linear-gradient(160deg,#4A3324,#120C08)"></div><div class="cap"><small>23:00 · NIGHT</small><h4>Amber afterglow</h4></div></div>
+      <div class="tile" style="background:var(--ink);justify-content:center;align-items:flex-start"><div class="cap"><small style="color:var(--gold2)">YOUR TURN</small><h4 style="font-size:46px">Make No. 7<br><em>your own.</em></h4><a class="btn" href="#make" style="margin-top:28px;background:var(--bg);color:var(--ink);height:50px"><span>Configure →</span></a></div></div>
+    </div>
+  </div></div>
+</section>
+
+<section class="sec cfg" id="make" style="padding-top:60px"><div class="wrap g">
+  <div class="stage" id="stage"><div class="ring"></div><div id="hit2" aria-hidden="true"></div><div class="tip">DRAG TO TURN · TYPE TO ENGRAVE</div></div>
+  <div class="panel rv">
+    <span class="lab">Make it yours</span>
+    <h2 style="margin-top:14px">No. 7, <em id="edName">Ambre</em></h2>
+    <div class="opt"><div class="lab"><span>Edition</span><em id="edLab">Ambre: warm, resinous</em></div>
+      <div class="sw" role="radiogroup" aria-label="Edition">
+        <button class="on" data-e="0" role="radio" aria-checked="true" aria-label="Ambre" style="background:radial-gradient(circle at 35% 30%,#F2C27A,#B8742A)"></button>
+        <button data-e="1" role="radio" aria-checked="false" aria-label="Rose" style="background:radial-gradient(circle at 35% 30%,#F4C1BE,#C2757A)"></button>
+        <button data-e="2" role="radio" aria-checked="false" aria-label="Noir" style="background:radial-gradient(circle at 35% 30%,#6A5146,#1E1511)"></button>
+      </div></div>
+    <div class="opt"><div class="lab"><span>Size</span></div>
+      <div class="sizes" role="radiogroup" aria-label="Size">
+        <button data-s="0" role="radio" aria-checked="false"><b>30 ml</b><span>$95</span></button>
+        <button class="on" data-s="1" role="radio" aria-checked="true"><b>50 ml</b><span>$145</span></button>
+        <button data-s="2" role="radio" aria-checked="false"><b>100 ml</b><span>$210</span></button>
+      </div></div>
+    <div class="opt"><div class="lab"><span>Engraving · free</span><em id="engCount">0 / 12</em></div>
+      <label class="eng"><input id="eng" maxlength="12" placeholder="Your initials" aria-label="Engraving text" autocomplete="off"><small>on the label</small></label></div>
+    <div class="buy"><div class="total" id="total">$145<small>Free shipping &amp; returns</small></div><button class="btn dark" id="add"><span>Add to bag</span></button></div>
+    <div class="perks"><span>Ships in 48 hrs</span><span>30-day returns</span><span>Free sample</span></div>
+  </div>
+</div></section>
+
+<section class="rev" id="reviews">
+  <div class="wrap head"><div><span class="lab">Worn and loved</span><h2 class="sp" style="margin-top:18px;max-width:12ch">People don't stop <em>asking.</em></h2></div>
+  <div class="score rv"><b>4.9</b><div class="stars">★★★★★</div><span>From 2,140 verified reviews*</span></div></div>
+  <div class="rrow" aria-label="Customer reviews">
+    <div class="rc"><div class="stars">★★★★★</div><p>“Three strangers asked what I was wearing in one afternoon.”</p><small>Sample review · Ambre, 50 ml</small></div>
+    <div class="rc"><div class="stars">★★★★★</div><p>“Warm without being heavy. It's still on my scarf a week later.”</p><small>Sample review · Noir, 100 ml</small></div>
+    <div class="rc"><div class="stars">★★★★★</div><p>“The engraving made it the best gift I've ever given.”</p><small>Sample review · Rose, 30 ml</small></div>
+    <div class="rc"><div class="stars">★★★★★</div><p>“The bottle is so heavy and beautiful it lives on my desk.”</p><small>Sample review · Ambre, 100 ml</small></div>
+    <div class="rc"><div class="stars">★★★★★</div><p>“Three strangers asked what I was wearing in one afternoon.”</p><small>Sample review · Ambre, 50 ml</small></div>
+    <div class="rc"><div class="stars">★★★★★</div><p>“Warm without being heavy. It's still on my scarf a week later.”</p><small>Sample review · Noir, 100 ml</small></div>
+    <div class="rc"><div class="stars">★★★★★</div><p>“The engraving made it the best gift I've ever given.”</p><small>Sample review · Rose, 30 ml</small></div>
+    <div class="rc"><div class="stars">★★★★★</div><p>“The bottle is so heavy and beautiful it lives on my desk.”</p><small>Sample review · Ambre, 100 ml</small></div>
+  </div>
+  <div class="wrap" style="margin-top:40px;font-size:12px;color:rgba(243,238,230,.45)">*Concept build: reviews and ratings are illustrative placeholders.</div>
+</section>
+
+<section class="sec set" id="set"><div class="wrap g">
+  <div class="vials rv" aria-hidden="true"><div class="vial" style="--c:#C8862E;height:150px"></div><div class="vial" style="--c:#D98C8C;height:170px"></div><div class="vial" style="--c:#3A2A22;height:150px"></div><div class="vial" style="--c:#B8A05A;height:170px"></div><div class="vial" style="--c:#8E5A3A;height:150px"></div></div>
+  <div><span class="lab rv">Not sure yet?</span><h2 class="sp" style="margin-top:20px">The Discovery <em>Set.</em></h2>
+  <p class="lead rv">Five 2 ml vials of our house scents. The full $28 comes back as credit on your first full bottle.</p>
+  <div class="ctas rv" style="display:flex;gap:16px;align-items:center;margin-top:36px;flex-wrap:wrap"><span class="serif" style="font-size:40px;font-weight:300">$28</span><button class="btn dark" id="addSet"><span>Add the set</span></button></div></div>
+</div></section>
+
+<section class="sec" id="faq" style="padding-top:40px"><div class="wrap">
+  <div style="text-align:center"><span class="lab rv">Questions</span><h2 class="sp" style="margin-top:18px">Good to <em>know.</em></h2></div>
+  <div class="faq">
+    <div class="qa rv"><button aria-expanded="false">How long does it last?<i>+</i></button><div class="a"><div><p>At a 22% concentration, most people get 8 to 12 hours on skin, and longer on fabric.</p></div></div></div>
+    <div class="qa rv"><button aria-expanded="false">How does engraving work?<i>+</i></button><div class="a"><div><p>Type up to 12 characters in the configurator. We engrave the brass-edged label by hand. It's free and adds one day to dispatch.</p></div></div></div>
+    <div class="qa rv"><button aria-expanded="false">Can I refill my bottle?<i>+</i></button><div class="a"><div><p>Yes. The cap unscrews and refills come in recyclable pouches at 30% less than a new bottle.</p></div></div></div>
+    <div class="qa rv"><button aria-expanded="false">What if I don't love it?<i>+</i></button><div class="a"><div><p>Return it within 30 days, even opened, for a full refund. We'd rather you find your scent.</p></div></div></div>
+  </div>
+</div></section>
+
+<section class="news" id="news"><div class="wrap">
+  <span class="lab rv">The letter</span>
+  <h2 class="sp" style="margin-top:20px">Quiet notes, <em>once a month.</em></h2>
+  <form class="nform rv" id="nform" novalidate><input type="email" id="nem" placeholder="Email address" aria-label="Email address"><button type="submit">SUBSCRIBE →</button></form>
+  <div class="msg" id="nmsg" aria-live="polite"></div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <div class="g">
+    <div><div class="logo" style="padding-left:0;font-size:36px">AUREL</div><p style="color:var(--mut);margin-top:16px;max-width:30ch;font-size:14px">Maison de parfum. Small batches, made slowly in Grasse.</p></div>
+    <div><h5>SHOP</h5><a href="#make">No. 7 Ambre Lumière</a><a href="#set">Discovery Set</a><a href="#make">Refills</a></div>
+    <div><h5>MAISON</h5><a href="#craft">Our craft</a><a href="#notes">The notes</a><a href="#reviews">Reviews</a></div>
+    <div><h5>HELP</h5><a href="#faq">Shipping</a><a href="#faq">Returns</a><a href="#faq">FAQ</a></div>
+  </div>
+  <div class="bot"><span>© AUREL, a concept build</span><span>Concept site designed and built by Milan John Davis. A reference build; richer features are scoped per project.</span></div>
+</div></footer>
+
+<div id="scrim"></div>
+<aside id="bag" aria-label="Shopping bag" aria-hidden="true">
+  <header><h3>Your <em>bag</em></h3><button id="bagClose" aria-label="Close bag" style="font-size:28px;line-height:1">×</button></header>
+  <div class="ship"><span id="shipTx">Add $120 more for a free travel spray</span><div class="pb"><i id="shipPb"></i></div></div>
+  <div id="items"></div>
+  <footer><div class="sub"><span class="lab" style="color:var(--ink)">Subtotal</span><b id="subT">$0</b></div><button class="btn dark" id="checkout"><span>Checkout</span></button><div class="note-s">Concept build: no payment is taken.</div></footer>
+</aside>
+<div id="sticky"><div><b id="stP">$145</b><small id="stD">No. 7 · Ambre · 50 ml</small></div><button class="btn" id="stAdd"><span>Add to bag</span></button></div>
+<div id="toast" role="status"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
