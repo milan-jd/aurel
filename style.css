@@ -632,3 +632,6 @@ a,button,input,select,textarea,label{touch-action:manipulation}
 /* checkout fields: full-height typing space (flex:1 was collapsing them inside the column layout) */
 .field input,.field select{flex:none;height:54px;padding:0 18px;font-size:16px;border-radius:14px}
 .field select{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.5) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231A1714' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 18px center;padding-right:44px;cursor:pointer}
+/* review score: keep the large figure clear of the stars */
+.rev .score b{display:block;line-height:1.08;padding-bottom:.12em;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
+.rev .score .stars{display:block;margin-top:6px;margin-bottom:6px}
