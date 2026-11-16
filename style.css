@@ -271,7 +271,7 @@ footer .bot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;m
  .eng input{font-size:19px}
  .hz .tile{width:76vw}
 }
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important}.sp .w>span{transform:none}.rv{opacity:1;transform:none}}
+
 
 /* ===== multipage additions ===== */
 .hide-m{}
